@@ -11,6 +11,7 @@ const adminRouter = require('./routes/admin')
 const coachRouter = require('./routes/coaches')
 const coursesRouter = require('./routes/courses')
 const uploadRouter = require('./routes/upload')
+const { start } = require('repl')
 
 const app = express()
 app.use(cors())
@@ -28,8 +29,10 @@ app.use(pinoHttp({
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.get('/healthcheck', (req, res) => {
-  res.status(200)
-  res.send('OK')
+  res.status(200).json({
+  status: 'success',
+  message: 'OK'
+})
 })
 app.use('/api/credit-package', creditPackageRouter)
 app.use('/api/coaches/skill', skillRouter)
