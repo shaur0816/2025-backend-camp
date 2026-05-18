@@ -97,6 +97,26 @@ class PaymentController {
   }
 
   /**
+   * 綠界 OrderResultURL：瀏覽器端付款結果接收
+   * 接收綠界 form POST，轉址到前端結果頁
+   */
+  static async orderResult (req, res, next) {
+    try {
+      const { RtnCode, MerchantTradeNo, RtnMsg } = req.body
+      const frontendUrl = ecpayConfig.clientBackUrl.replace('/fitness-plans', '')
+      const params = new URLSearchParams({
+        RtnCode: RtnCode || '',
+        MerchantTradeNo: MerchantTradeNo || '',
+        RtnMsg: RtnMsg || ''
+      })
+      res.redirect(`${frontendUrl}/payment/result?${params.toString()}`)
+    } catch (error) {
+      logger.error('[orderResult] error:', error)
+      next(error)
+    }
+  }
+
+  /**
    * 綠界付款完成後的 Server-to-Server 通知
    * 驗證成功後更新 CreditPurchase 狀態為 paid
    */

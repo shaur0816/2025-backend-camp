@@ -16,4 +16,7 @@ router.post('/create', auth, paymentController.createOrder)
 // 綠界付款完成通知（Server-to-Server，不需驗證 JWT）
 router.post('/callback', paymentController.paymentCallback)
 
+// 綠界 OrderResultURL：瀏覽器端付款結果，轉址到前端
+router.post('/order-result', paymentController.orderResult)
+
 module.exports = router
