@@ -71,7 +71,7 @@
               >
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-lg text-primary-0">
-                    {{ formatLocalDateTime(order.purchase_at) }}
+                    {{ order.purchase_at ? formatLocalDateTime(order.purchase_at) : '—' }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -138,7 +138,7 @@
               <div class="flex justify-between">
                 <span class="text-primary-300">消費日期</span>
                 <span class="text-primary-0">{{
-                  formatLocalDateTime(order.purchase_at)
+                  order.purchase_at ? formatLocalDateTime(order.purchase_at) : '—'
                 }}</span>
               </div>
               <div class="flex justify-between">

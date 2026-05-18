@@ -12,7 +12,6 @@ const coachRouter = require('./routes/coaches')
 const coursesRouter = require('./routes/courses')
 const uploadRouter = require('./routes/upload')
 const paymentRouter = require('./routes/payments')
-const { start } = require('repl')
 
 const app = express()
 app.use(cors())

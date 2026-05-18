@@ -22,29 +22,12 @@ function generateMerchantTradeNo () {
   return `T${Date.now()}`
 }
 
-// 驗證綠界回傳的 CheckMacValue
-function verifyCheckMacValue (params, hashKey, hashIV) {
+// 使用官方 SDK 驗證綠界回傳的 CheckMacValue
+function verifyCheckMacValue (params) {
   const { CheckMacValue: receivedMac, ...rest } = params
-
-  const sortedStr = Object.keys(rest)
-    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-    .map(key => `${key}=${rest[key]}`)
-    .join('&')
-
-  let raw = `HashKey=${hashKey}&${sortedStr}&HashIV=${hashIV}`
-
-  raw = encodeURIComponent(raw)
-    .toLowerCase()
-    .replace(/%2d/g, '-')
-    .replace(/%5f/g, '_')
-    .replace(/%2e/g, '.')
-    .replace(/%21/g, '!')
-    .replace(/%2a/g, '*')
-    .replace(/%28/g, '(')
-    .replace(/%29/g, ')')
-
-  const mac = crypto.createHash('sha256').update(raw).digest('hex').toUpperCase()
-  return mac === receivedMac
+  const ecpay = buildEcpayInstance()
+  const expectedMac = ecpay.payment_client.helper.gen_chk_mac_value(rest).toUpperCase()
+  return expectedMac === receivedMac.toUpperCase()
 }
 
 class PaymentController {
@@ -71,16 +54,9 @@ class PaymentController {
       }
 
       const merchantTradeNo = generateMerchantTradeNo()
-      const tradeDate = new Date().toLocaleString('zh-TW', {
-        timeZone: 'Asia/Taipei',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }).replace(/\//g, '/').replace(',', '')
+      const now = new Date()
+      const pad = n => String(n).padStart(2, '0')
+      const tradeDate = `${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
 
       // 先建立 pending 的購買紀錄
       const creditPurchaseRepo = dataSource.getRepository('CreditPurchase')
@@ -130,7 +106,7 @@ class PaymentController {
       const params = req.body
 
       // 驗證 CheckMacValue 防偽造
-      const isValid = verifyCheckMacValue(params, ecpayConfig.hashKey, ecpayConfig.hashIV)
+      const isValid = verifyCheckMacValue(params)
       if (!isValid) {
         logger.warn('[paymentCallback] CheckMacValue 驗證失敗')
         res.send('0|CheckMacValue Error')

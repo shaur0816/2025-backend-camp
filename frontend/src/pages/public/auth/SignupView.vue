@@ -132,7 +132,7 @@ async function signup() {
   } catch (error) {
     let msg = error.message;
 
-    if (Object.hasOwn(error.response, "data")) {
+    if (error.response && Object.hasOwn(error.response, "data")) {
       const { status, message } = error.response.data;
       msg = message;
 
@@ -142,7 +142,7 @@ async function signup() {
       }
     }
 
-    throw new Error(`[getCoachCourseList] error : ${msg}`);
+    swalHandler(proxy.$swal, msg || "註冊失敗，請稍後再試");
   }
 }
 </script>
