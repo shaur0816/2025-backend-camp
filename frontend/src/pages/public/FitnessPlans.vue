@@ -107,7 +107,7 @@
 import { ref, computed, onMounted, getCurrentInstance } from "vue";
 import RedirectModal from "../../components/RedirectModal.vue";
 import FitnessPlanSuccessModal from "../../components/FitnessPlanSuccessModal.vue";
-import { getCreditPackages, postCreditPackage } from "../../api/index.js";
+import { getCreditPackages, createEcpayOrder } from "../../api/index.js";
 import { getDataFromCookieByKey } from "../../utils/cookie.js";
 import swalHandler from "../../utils/swalHandler.js";
 
@@ -163,21 +163,26 @@ async function buyCreditPackage(id) {
       openRedirectModal();
       return;
     }
-    const { status } = await postCreditPackage(id);
-    if (status === "success") {
-      openFitnessPlanSuccessModal();
+
+    // 向後端建立綠界訂單，取得付款表單 HTML
+    const { data } = await createEcpayOrder(id);
+
+    // 將 HTML 注入 DOM 後自動 submit 到綠界
+    const container = document.createElement("div");
+    container.innerHTML = data.html;
+    document.body.appendChild(container);
+    const form = container.querySelector("form");
+    if (form) {
+      form.submit();
     }
   } catch (error) {
     let msg = error.message;
 
-    if (Object.hasOwn(error.response, "data")) {
-      const { status, message } = error.response.data;
+    if (error.response && Object.hasOwn(error.response, "data")) {
+      const { message } = error.response.data;
       msg = message;
-
-      if (status === "failed") {
-        swalHandler(proxy.$swal, message);
-        return;
-      }
+      swalHandler(proxy.$swal, msg);
+      return;
     }
 
     throw new Error(`[buyCreditPackage] error : ${msg}`);

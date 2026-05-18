@@ -37,7 +37,18 @@ module.exports = new EntitySchema({
     purchaseAt: {
       type: 'timestamp',
       name: 'purchase_at',
-      nullable: false
+      nullable: true
+    },
+    payment_status: {
+      type: 'varchar',
+      length: 20,
+      nullable: false,
+      default: 'pending'
+    },
+    merchant_trade_no: {
+      type: 'varchar',
+      length: 20,
+      nullable: true
     }
   },
   relations: {

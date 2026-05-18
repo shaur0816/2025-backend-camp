@@ -6,3 +6,7 @@ export function getCreditPackages() {
 export function postCreditPackage(id) {
   return request.post(`credit-package/${id}`);
 }
+
+export function createEcpayOrder(creditPackageId) {
+  return request.post("payment/create", { creditPackageId });
+}

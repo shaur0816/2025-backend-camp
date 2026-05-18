@@ -11,6 +11,7 @@ const adminRouter = require('./routes/admin')
 const coachRouter = require('./routes/coaches')
 const coursesRouter = require('./routes/courses')
 const uploadRouter = require('./routes/upload')
+const paymentRouter = require('./routes/payments')
 const { start } = require('repl')
 
 const app = express()
@@ -41,6 +42,7 @@ app.use('/api/admin', adminRouter)
 app.use('/api/coaches', coachRouter)
 app.use('/api/courses', coursesRouter)
 app.use('/api/upload', uploadRouter)
+app.use('/api/payment', paymentRouter)
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {

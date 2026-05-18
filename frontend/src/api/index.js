@@ -1,4 +1,4 @@
-import { getCreditPackages, postCreditPackage } from "./credit-package.js";
+import { getCreditPackages, postCreditPackage, createEcpayOrder } from "./credit-package.js";
 import {
   getCoaches,
   getCoachDetail,
@@ -31,6 +31,7 @@ import {
 export {
   getCreditPackages,
   postCreditPackage,
+  createEcpayOrder,
   getCoaches,
   getCoachDetail,
   getCoachCourses,
